@@ -1,0 +1,19 @@
+{
+  "_comment": "Условия, которые меняются редко. Правьте здесь, если Pinduoduo, карго или таможня поменяли правила.",
+  "vat": 0.16,
+  "pdd_card_fee": 0.03,
+  "pdd_card_fee_min_cny": 2,
+  "wallet_fee": 0.03,
+  "wallet_free_limit_cny": 200,
+  "kaspi_markup": 0.01,
+  "cargo_usd_markup": 0.01,
+  "exchanger_markup": 0.04,
+  "duty_free_eur": 200,
+  "duty_free_kg": 31,
+  "cargo_tariffs": [
+    {"name": "Jana Post", "usd_per_kg": 3.79},
+    {"name": "Jana Post от 10 кг", "usd_per_kg": 2.99, "min_kg": 10},
+    {"name": "Казпочта Keruen", "usd_per_kg": 3.7},
+    {"name": "Карго авто", "usd_per_kg": 2.8}
+  ]
+}

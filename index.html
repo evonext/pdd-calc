@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pinduoduo: что выгоднее</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:wght@800&family=Instrument+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light dark;--bg:light-dark(#fff,#120d0b);--ink:light-dark(#111,#f3eeea);--mut:light-dark(#5b5753,#a99f98);--line:light-dark(#e4e1de,#2d2522);--acc:#ff4a1c;--acc2:light-dark(#fff1ec,#2a1610);--card:light-dark(#f6f4f2,#1b1411)}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Instrument Sans",system-ui,sans-serif}
+.band{padding:clamp(20px,4vw,48px) max(5vw,16px)}
+.wrap{max-width:760px;margin:0 auto}
+h1,.big{font-family:"Sofia Sans Condensed",system-ui,sans-serif;font-weight:800;line-height:1.05;margin:0}
+h1{font-size:clamp(26px,5vw,36px)}
+.hero{background:var(--acc);color:#fff}
+.big{font-size:clamp(48px,13vw,88px);white-space:nowrap;margin-top:14px}
+.sub{opacity:.9;font-size:15px}
+.in{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+label{display:grid;gap:4px;font-size:14px;color:var(--mut)}
+input,select{font-size:16px;font-family:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-height:48px;width:100%}
+.big-in{font-size:22px;font-weight:600}
+.chk{display:flex;gap:10px;align-items:center;color:var(--ink);font-size:15px;margin:4px 0 8px}
+.chk input{width:22px;min-height:22px;accent-color:var(--acc)}
+input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.rate{font-size:13px;color:var(--mut);margin:0 0 6px}
+details.more{border-top:1px solid var(--line);padding:10px 0}
+details.more>summary{cursor:pointer;font-weight:600;min-height:32px}
+.opt{border-bottom:1px solid var(--line);padding:12px 0}
+.opt summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;cursor:pointer;list-style:none}
+.opt summary::-webkit-details-marker{display:none}
+.opt .n{font-weight:600}.opt .t{font-weight:600;white-space:nowrap;text-align:right;font-size:18px}
+.opt .s,.opt .d{font-size:13px;color:var(--mut)}.opt .d{text-align:right;white-space:nowrap}
+.opt.best{background:var(--acc2);margin:0 -10px;padding:12px 10px;border-radius:8px;border:0}
+.opt.na{opacity:.45}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+td{padding:4px 0;border-bottom:1px dashed var(--line)}td:last-child{text-align:right;white-space:nowrap}
+.warn{background:var(--acc2);border-left:4px solid var(--acc);padding:10px 14px;border-radius:4px;font-size:14px;margin:10px 0}
+ul{padding-left:20px;font-size:14px;color:var(--mut)}li{margin-bottom:6px}
+@media(max-width:420px){.in{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="band hero"><div class="wrap">
+<h1>Pinduoduo → Казахстан</h1>
+<div class="big" id="bestSum">—</div>
+<div class="sub" id="bestName">Введите цену</div>
+</div></section>
+
+<section class="band"><div class="wrap">
+<form id="f" autocomplete="off" onsubmit="return false">
+<div class="in">
+<label>Цена товаров, ¥<input class="big-in" id="price" type="number" inputmode="decimal" min="0" step="0.01" value="350"></label>
+<label>Вес, кг<input class="big-in" id="weight" type="number" inputmode="decimal" min="0" step="0.1" value="2"></label>
+</div>
+<label class="chk"><input id="free" type="checkbox" checked> Есть значок «Free shipping to Kazakhstan»</label>
+<p class="rate" id="rateLine">Загружаю курс…</p>
+
+<details class="more"><summary>Тонкие настройки</summary>
+<div class="in" style="margin-top:10px">
+<label>Сколько отдельных оплат<input id="pays" type="number" inputmode="numeric" min="1" step="1" value="1"></label>
+<label>Доставка по Китаю, ¥<input id="dom" type="number" inputmode="decimal" min="0" value="0"></label>
+<label>Тариф карго<select id="tariff"></select></label>
+<label>Таможня<select id="cust"><option value="old">200 € / 31 кг, сверх — 15%</option><option value="new">Новый: свыше 200 € — 5% + НДС</option><option value="none">Не учитывать</option></select></label>
+<label>Курс Kaspi ¥, если знаете<input id="rK" type="number" step="0.01" placeholder="авто"></label>
+<label>Курс обменника ¥ (баланс Alipay)<input id="rW" type="number" step="0.01" placeholder="авто"></label>
+</div>
+<p class="rate">Точный курс Kaspi: в выписке Kaspi Gold разделите сумму в ₸ на сумму в ¥ прошлой покупки.</p>
+</details>
+</form>
+
+<div id="warns"></div>
+<div id="list"></div>
+
+<details class="more" style="margin-top:16px"><summary>Что учитывается</summary>
+<ul>
+<li><b>Прямая доставка</b> до Казпочты бесплатна только для товаров со значком. PDD добавляет НДС 16%, за карту ещё 3% (мин. 2 ¥) от суммы с НДС. WeChat в этой схеме недоступен. Нужен ИИН, возврата в Китай нет, 11–20 рабочих дней.</li>
+<li><b>Alipay/WeChat с карты</b> берут 3%, только если платёж больше 200 ¥ — дробите оплату.</li>
+<li><b>Kaspi</b> считает юань через доллар и списывает окончательно через ~3 дня — сумма может чуть сдвинуться.</li>
+<li><b>Карго</b> без казахстанского НДС, но платите за вес. Таможня — на каждую посылку отдельно: до 200 € и 31 кг без пошлины.</li>
+<li>Вывод: тяжёлое и дешёвое — прямой доставкой, лёгкое и дорогое — карго.</li>
+</ul>
+</details>
+</div></section>
+
+<script>
+{
+const $=id=>document.getElementById(id);
+let R={date:'21.11.2026',source:'НБРК',CNY:68.12,USD:455,EUR:498.77};
+let C={vat:.16,pdd_card_fee:.03,pdd_card_fee_min_cny:2,wallet_fee:.03,wallet_free_limit_cny:200,kaspi_markup:.01,cargo_usd_markup:.01,exchanger_markup:.04,duty_free_eur:200,duty_free_kg:31,
+  cargo_tariffs:[{name:'Jana Post',usd_per_kg:3.79},{name:'Jana Post от 10 кг',usd_per_kg:2.99,min_kg:10},{name:'Казпочта Keruen',usd_per_kg:3.7},{name:'Карго авто',usd_per_kg:2.8}]};
+const ids=['price','weight','free','pays','dom','tariff','cust','rK','rW'];
+const KEY='pdd-calc-v2';
+const num=id=>{const v=parseFloat(String($(id).value).replace(',','.'));return isFinite(v)?v:0};
+const T=v=>Math.round(v).toLocaleString('ru-RU')+' ₸';
+const Y=v=>(Math.round(v*100)/100).toLocaleString('ru-RU')+' ¥';
+const f2=v=>v.toLocaleString('ru-RU',{maximumFractionDigits:2});
+
+function fillTariffs(){
+  const keep=$('tariff').value;
+  $('tariff').innerHTML='<option value="auto">Авто (дешёвый по весу)</option>'+C.cargo_tariffs.map((t,i)=>`<option value="${i}">${t.name} — $${t.usd_per_kg}/кг</option>`).join('');
+  if(keep)$('tariff').value=keep;
+}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'{}');ids.forEach(i=>{if(s[i]!==undefined){const e=$(i);e.type==='checkbox'?e.checked=s[i]:e.value=s[i]}})}catch(e){}}
+function save(){try{const s={};ids.forEach(i=>{const e=$(i);s[i]=e.type==='checkbox'?e.checked:e.value});localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+
+function render(){
+  save();
+  const P=num('price'),W=num('weight'),D=num('dom'),n=Math.max(1,Math.round(num('pays'))||1),free=$('free').checked;
+  const rN=R.CNY,rK=num('rK')||rN*(1+C.kaspi_markup),rW=num('rW')||rN*(1+C.exchanger_markup),usd=R.USD*(1+C.cargo_usd_markup),eur=R.EUR;
+  const avail=C.cargo_tariffs.filter(t=>!t.min_kg||W>=t.min_kg);
+  const tv=$('tariff').value, tar=tv==='auto'||tv===''?avail.reduce((a,b)=>b.usd_per_kg<a.usd_per_kg?b:a,avail[0]):C.cargo_tariffs[+tv];
+  $('rateLine').textContent=`Курс ${R.source} на ${R.date}: ¥ ${f2(rN)} · Kaspi ≈ ${f2(rK)}${num('rK')?'':' (оценка)'} · $ ${f2(R.USD)}`;
+  const cardFee=a=>a>0?n*Math.max(C.pdd_card_fee_min_cny,C.pdd_card_fee*a/n):0;
+  const walletFee=a=>a/n>C.wallet_free_limit_cny?C.wallet_fee*a:0;
+  const ship=W*tar.usd_per_kg*usd, valEur=(P+D)*rN/eur, c=$('cust').value;
+  let duty=0;
+  if(c==='old')duty=Math.max(.15*Math.max(0,valEur-C.duty_free_eur),2*Math.max(0,W-C.duty_free_kg))*eur;
+  else if(c==='new'&&valEur>C.duty_free_eur){const d=.05*valEur;duty=(d+.16*(valEur+d))*eur}
+  const vat=P*C.vat,base=P+vat,cb=P+D,o=[];
+  const fA=cardFee(base),fB=walletFee(base),fC=cardFee(cb),fD=walletFee(cb);
+  o.push({n:'Прямая доставка, картой',s:'НДС 16% + 3% за карту',na:!free,sum:(base+fA)*rK,
+    rows:[['Товары',Y(P)],['НДС 16%',Y(vat)],['Комиссия за карту',Y(fA)],['Доставка','0'],['× курс Kaspi '+f2(rK),T((base+fA)*rK)]]});
+  o.push({n:'Прямая доставка, Alipay',s:fB?'НДС 16% + 3% Alipay':'НДС 16%, без комиссии',na:!free,sum:(base+fB)*rK,
+    rows:[['Товары',Y(P)],['НДС 16%',Y(vat)],['Комиссия Alipay',Y(fB)],['Доставка','0'],['× курс Kaspi '+f2(rK),T((base+fB)*rK)]]});
+  const cargo=(name,s,fee,rate,rn)=>o.push({n:name,s,sum:(cb+fee)*rate+ship+duty,
+    rows:[['Товары'+(D?' + доставка по Китаю':''),Y(cb)],['Комиссия',Y(fee)],['× курс '+rn+' '+f2(rate),T((cb+fee)*rate)],[`${tar.name}: ${W} кг × $${tar.usd_per_kg}`,T(ship)],['Таможня',T(duty)]]});
+  cargo('Карго, картой','3% за карту + вес',fC,rK,'Kaspi');
+  cargo('Карго, Alipay / WeChat',fD?'3% (платёж > 200 ¥) + вес':'без комиссии + вес',fD,rK,'Kaspi');
+  cargo('Карго, баланс Alipay','юани у обменника + вес',0,rW,'обменника');
+  const ok=o.filter(x=>!x.na).sort((a,b)=>a.sum-b.sum),all=[...ok,...o.filter(x=>x.na)],best=ok[0];
+  if(P>0&&best){$('bestSum').textContent=T(best.sum);$('bestName').textContent='Дешевле всего: '+best.n+(ok[1]?` · следующий +${T(ok[1].sum-best.sum)}`:'')}
+  else{$('bestSum').textContent='—';$('bestName').textContent='Введите цену'}
+  $('list').innerHTML=all.map(x=>`<details class="opt${x===best?' best':''}${x.na?' na':''}"><summary><span class="n">${x.n}</span><span class="t">${T(x.sum)}</span><span class="s">${x.na?'нет значка бесплатной доставки':x.s}</span><span class="d">${x!==best&&!x.na?'+'+T(x.sum-best.sum):''}</span></summary><table>${x.rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table></details>`).join('');
+  const w=[];
+  if(P/n>C.wallet_free_limit_cny)w.push('Платёж больше 200 ¥ — Alipay/WeChat возьмут 3%. Разбейте на оплаты до 200 ¥ (Тонкие настройки → число оплат).');
+  if(valEur>C.duty_free_eur)w.push(`Заказ ≈ ${Math.round(valEur)} € — больше 200 €. Для карго делите на посылки до 200 € каждая.`);
+  $('warns').innerHTML=w.map(t=>`<div class="warn">${t}</div>`).join('');
+}
+
+async function getJSON(u){const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw 0;return r.json()}
+async function init(){
+  load();fillTariffs();load();render();
+  try{C={...C,...await getJSON('config.json')};fillTariffs();load()}catch(e){}
+  try{const r=await getJSON('rates.json');if(r.CNY)R=r}catch(e){}
+  const parts=String(R.date).split(/[.-]/),dt=parts[0].length===4?new Date(R.date):new Date(+parts[2],parts[1]-1,+parts[0]);
+  if(!(Date.now()-dt<4*864e5)){
+    try{const k=(await getJSON('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/kzt.json')).kzt;
+      R={date:new Date().toLocaleDateString('ru-RU'),source:'рыночный',CNY:+(1/k.cny).toFixed(2),USD:+(1/k.usd).toFixed(2),EUR:+(1/k.eur).toFixed(2)}}catch(e){}
+  }
+  render();
+}
+$('f').addEventListener('input',render);$('f').addEventListener('change',render);
+init();
+}
+</script>
+</body>
+</html>
