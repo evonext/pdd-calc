@@ -12,12 +12,17 @@ def get(url):
         return r.read()
 
 def nbrk():
-    # курс на завтра публикуется после 17:00 — берём самую свежую из сегодня/завтра
-    for d in (now + timedelta(days=1), now):
+    # курс на завтра публикуется после 17:00 — берём самую свежую из сегодня/завтра.
+    # НБРК иногда отдаёт XML с другой датой внутри — такой ответ пропускаем.
+    for d in (now + timedelta(days=1), now, now - timedelta(days=1)):
         try:
             root = ET.fromstring(get(f"https://nationalbank.kz/rss/get_rates.cfm?fdate={d:%d.%m.%Y}"))
         except Exception as e:
             print("NBRK error", d.date(), e)
+            continue
+        got = (root.findtext("date") or "").strip()
+        if got and got != f"{d:%d.%m.%Y}":
+            print("NBRK date mismatch", d.date(), got)
             continue
         out = {}
         for it in root.iter("item"):
